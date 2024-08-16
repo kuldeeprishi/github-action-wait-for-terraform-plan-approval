@@ -15,13 +15,12 @@ inputs:
     description: The plan id to wait for. Required when `command == wait`.
   external_service_url:
     description: Base URL for the external service that will display plans for approval
-    default: https://terraform-plan-approval.herokuapp.com
   timeout_seconds:
     description: Give up waiting for approval/rejection after this many seconds
-    default: 300
+    default: "300"
   polling_period_seconds:
     description: The interval (in seconds) at which we'll check the plan status
-    default: 5
+    default: "5"
 
 outputs:
   plan_id:

@@ -57,17 +57,20 @@ def wait(plan_id: str, timeout_seconds: int, polling_period_seconds: int):
 
 		try:
 			status = response.json()['status']
+			reviewed_by = response.json()['reviewed_by']
 		except:
 			print('Response from external service was not in expected format.')
 			sys.exit(1)
 
 		if status == 'rejected':
-			print('Plan was rejected')
+			print(f'Plan was rejected by {reviewed_by}')
 			print('::set-output name=plan_status::rejected')
+			print('::set-output name=reviewed_by::'+reviewed_by)
 			sys.exit(1)
 		elif status == 'approved':
-			print('Plan was approved')
+			print(f'Plan was approved by {reviewed_by}')
 			print('::set-output name=plan_status::approved')
+			print('::set-output name=reviewed_by::'+reviewed_by)
 			sys.exit(0)
 
 		time.sleep(polling_period_seconds)
@@ -75,6 +78,7 @@ def wait(plan_id: str, timeout_seconds: int, polling_period_seconds: int):
 
 	print('Timed out waiting for plan approval')
 	print('::set-output name=plan_status::timed out')
+	print('::set-output name=reviewed_by::'+reviewed_by)
 	sys.exit(1)
 
 
