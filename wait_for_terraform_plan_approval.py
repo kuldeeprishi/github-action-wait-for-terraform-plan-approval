@@ -57,7 +57,7 @@ def wait(plan_id: str, timeout_seconds: int, polling_period_seconds: int):
 
 		try:
 			status = response.json()['status']
-			reviewed_by = response.json()['reviewed_by']
+			reviewed_by = response.json()['reviewed_by'] or ""
 		except:
 			print('Response from external service was not in expected format.')
 			sys.exit(1)
@@ -75,6 +75,9 @@ def wait(plan_id: str, timeout_seconds: int, polling_period_seconds: int):
 
 		time.sleep(polling_period_seconds)
 		waited += polling_period_seconds
+
+	# mark the request as timeout
+	response = requests.put(f'{external_service_url}/plan/{plan_id}/status', headers=headers, data={"status": "timed_out"})
 
 	print('Timed out waiting for plan approval')
 	print('::set-output name=plan_status::timed out')

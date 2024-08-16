@@ -29,7 +29,8 @@ outputs:
     description: When `command == submit`, returns the URL that a human should visit to review and approve/reject the plan.
   plan_status:
     description: 'When `command == wait`, returns the final status of the plan: either "approved", "rejected", or "timed out".'
-
+  reviewed_by:
+    description: 'When `command == wait`, returns the name of reviewer'
 runs:
   using: 'docker'
   image: 'Dockerfile'
