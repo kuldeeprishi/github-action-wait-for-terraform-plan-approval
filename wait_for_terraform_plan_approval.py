@@ -37,8 +37,9 @@ def submit(plan_contents: str):
 		sys.exit(1)
 
 	print(f'Submitted plan: {external_service_url}/plan/{plan_id}')
-	print(f'::set-output name=plan_id::{plan_id}')
-	print(f'::set-output name=approval_prompt_url::{external_service_url}/plan/{plan_id}')
+	with open(os.environ['GITHUB_OUTPUT'], 'a') as output_file:
+		output_file.write(f'plan_id={plan_id}\n')
+		output_file.write(f'approval_prompt_url={external_service_url}/plan/{plan_id}\n')
 
 
 def wait(plan_id: str, timeout_seconds: int, polling_period_seconds: int):
@@ -64,13 +65,15 @@ def wait(plan_id: str, timeout_seconds: int, polling_period_seconds: int):
 
 		if status == 'rejected':
 			print(f'Plan was rejected by {reviewed_by}')
-			print('::set-output name=plan_status::rejected')
-			print('::set-output name=reviewed_by::'+reviewed_by)
+			with open(os.environ['GITHUB_OUTPUT'], 'a') as output_file:
+				output_file.write(f'plan_status=rejected\n')
+				output_file.write(f'reviewed_by={reviewed_by}\n')
 			sys.exit(1)
 		elif status == 'approved':
 			print(f'Plan was approved by {reviewed_by}')
-			print('::set-output name=plan_status::approved')
-			print('::set-output name=reviewed_by::'+reviewed_by)
+			with open(os.environ['GITHUB_OUTPUT'], 'a') as output_file:
+				output_file.write(f'plan_status=approved\n')
+				output_file.write(f'reviewed_by={reviewed_by}\n')
 			sys.exit(0)
 
 		time.sleep(polling_period_seconds)
@@ -80,8 +83,9 @@ def wait(plan_id: str, timeout_seconds: int, polling_period_seconds: int):
 	response = requests.put(f'{external_service_url}/plan/{plan_id}/status', headers=headers, data={"status": "timed_out"})
 
 	print('Timed out waiting for plan approval')
-	print('::set-output name=plan_status::timed out')
-	print('::set-output name=reviewed_by::'+reviewed_by)
+	with open(os.environ['GITHUB_OUTPUT'], 'a') as output_file:
+		output_file.write(f'plan_status=timed_out\n')
+		output_file.write(f'reviewed_by={reviewed_by}\n')
 	sys.exit(1)
 
 
